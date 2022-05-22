@@ -3,10 +3,12 @@ import { playerState, videoPlayer } from "../types/videoPlayerTypes";
 
 export const useVideoPlayer = (videoElement: React.RefObject<HTMLVideoElement>): videoPlayer => {
   const [playerState, setPlayerState] = useState<playerState>({
-    isPlaying: false,
+    isPlaying: true,
     progress: 0,
     speed: 1,
-    isMuted: false,
+    isMuted: true,
+    duration: 0,
+    currentTime: 0,
   });
 
   const togglePlay = (): void => {
@@ -22,7 +24,7 @@ export const useVideoPlayer = (videoElement: React.RefObject<HTMLVideoElement>):
     const duration: number = videoElement.current?.duration || 0;
     const progress: number = (currentTime / duration) * 100;
 
-    setPlayerState((e) => ({ ...e, progress }));
+    setPlayerState((e) => ({ ...e, progress, currentTime, duration }));
   };
 
   const handleVideoProgress = (e: ChangeEvent<HTMLInputElement>): void => {

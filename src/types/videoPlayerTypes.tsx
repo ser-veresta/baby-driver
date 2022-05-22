@@ -5,6 +5,8 @@ export interface playerState {
   progress: number;
   speed: number;
   isMuted: boolean;
+  duration: number;
+  currentTime: number;
 }
 
 export interface videoPlayer {
