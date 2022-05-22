@@ -14,6 +14,7 @@ const App: React.FC = () => {
   const cityData = {
     19: "Samsung company",
   };
+  console.log(cityData);
   useEffect(() => {
     // // if (cityData.hasOwnProperty(videoElement.current?.currentTime)) {
     // if (cityData.hasOwn(videoElement.current?.currentTime)) {
