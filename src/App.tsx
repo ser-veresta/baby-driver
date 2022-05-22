@@ -1,6 +1,6 @@
 import * as toastr from "toastr";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { faVolumeHigh, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 
 // faPause, faPlay,
