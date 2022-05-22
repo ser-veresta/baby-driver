@@ -26,7 +26,7 @@ const App: React.FC = () => {
     <div>
       <div className="group">
         <video
-          className="fixed left-0 bottom-0 w-screen"
+          className="fixed h-screen w-screen"
           loop
           // src="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
           src="https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653228273/City%20Video/Magic_of_Hong_Kong._Mind-blowing_cyberpunk_drone_video_of_the_craziest_Asia_s_city_by_Timelab.pro_geqnk0.mp4"
