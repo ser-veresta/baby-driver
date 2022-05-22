@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  cursor: pointer;
+  height: 8px;
+}
+
+.range::-moz-progress-bar {
+  background: white;
+}
