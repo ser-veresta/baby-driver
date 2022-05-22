@@ -1,4 +1,4 @@
-import * as toastr from "toastr";
+// import * as toastr from "toastr";
 
 import React, { useRef } from "react";
 import { faVolumeHigh, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
@@ -15,7 +15,7 @@ const App: React.FC = () => {
     19: "Samsung company",
   };
   console.log(cityData);
-  toastr.info("HI");
+  // toastr.info("HI");
   // useEffect(() => {
   //   // // if (cityData.hasOwnProperty(videoElement.current?.currentTime)) {
   //   // if (cityData.hasOwn(videoElement.current?.currentTime)) {
@@ -27,7 +27,7 @@ const App: React.FC = () => {
     <div>
       <div className="group">
         <video
-          className="fixed h-screen w-screen"
+          className="fixed w-screen"
           loop
           // src="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
           src="https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653228273/City%20Video/Magic_of_Hong_Kong._Mind-blowing_cyberpunk_drone_video_of_the_craziest_Asia_s_city_by_Timelab.pro_geqnk0.mp4"
