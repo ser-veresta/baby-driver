@@ -15,13 +15,14 @@ const App: React.FC = () => {
     19: "Samsung company",
   };
   console.log(cityData);
-  useEffect(() => {
-    // // if (cityData.hasOwnProperty(videoElement.current?.currentTime)) {
-    // if (cityData.hasOwn(videoElement.current?.currentTime)) {
-    //   console.log(videoElement.current?.currentTime);
-    toastr.info("HI");
-    // }
-  });
+  toastr.info("HI");
+  // useEffect(() => {
+  //   // // if (cityData.hasOwnProperty(videoElement.current?.currentTime)) {
+  //   // if (cityData.hasOwn(videoElement.current?.currentTime)) {
+  //   //   console.log(videoElement.current?.currentTime);
+  //   toastr.info("HI");
+  //   // }
+  // });
   return (
     <div>
       <div className="group">
