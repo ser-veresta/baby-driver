@@ -1,40 +1,51 @@
-// import * as toastr from "toastr";
+import "react-toastify/dist/ReactToastify.css";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { faVolumeHigh, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 
 // faPause, faPlay,
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useVideoPlayer from "./utils/videoPlayerHook";
 
+interface CityData {
+  [keys: string]: string;
+}
+
+const cityData: CityData = {
+  "00:00:01": "The city of Hong Kong",
+  "00:00:14": "Samsung Company",
+};
+
 const App: React.FC = () => {
   const videoElement = useRef<HTMLVideoElement>(null);
   const { playerState, handleOnTimeUpdate, handleVideoSpeed, toggleMute } = useVideoPlayer(videoElement);
-  // togglePlay,handleVideoProgress
-  const cityData = {
-    19: "Samsung company",
-  };
-  console.log(cityData);
-  // toastr.info("HI");
-  // useEffect(() => {
-  //   // // if (cityData.hasOwnProperty(videoElement.current?.currentTime)) {
-  //   // if (cityData.hasOwn(videoElement.current?.currentTime)) {
-  //   //   console.log(videoElement.current?.currentTime);
-  //   toastr.info("HI");
-  //   // }
-  // });
+  const [currentTime, setCurrentTime] = useState<string>("00:00:00");
+
+  useEffect(() => {
+    setCurrentTime(convertHMS(playerState.currentTime.toFixed(2)));
+  }, [playerState.currentTime]);
+
+  useEffect(() => {
+    if (cityData.hasOwnProperty(currentTime)) {
+      console.log(cityData[currentTime]);
+      toast.info(cityData[currentTime]);
+    }
+  }, [currentTime]);
   return (
     <div>
       <div className="group">
-        <video
-          className="fixed w-screen"
-          loop
-          // src="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-          src="https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653228273/City%20Video/Magic_of_Hong_Kong._Mind-blowing_cyberpunk_drone_video_of_the_craziest_Asia_s_city_by_Timelab.pro_geqnk0.mp4"
-          ref={videoElement}
-          onTimeUpdate={handleOnTimeUpdate}
-          autoPlay
-        />
+        <div className="overflow-hidden h-screen">
+          <video
+            className="w-screen"
+            loop
+            // src="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+            src="https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653228273/City%20Video/Magic_of_Hong_Kong._Mind-blowing_cyberpunk_drone_video_of_the_craziest_Asia_s_city_by_Timelab.pro_geqnk0.mp4"
+            ref={videoElement}
+            onTimeUpdate={handleOnTimeUpdate}
+            autoPlay
+          />
+        </div>
         <div className="flex items-center justify-evenly absolute bottom-8 p-4 w-full flex-wrap  translate-y-[150%] transition-all ease-in-out duration-300 group-hover:translate-y-0">
           {/* <div>
             <button className="bg-none border-none outline-none cursor-pointer" onClick={togglePlay}>
@@ -44,20 +55,12 @@ const App: React.FC = () => {
               />
             </button>
           </div> */}
-          {/* <input
-            className="bg-[rgba(255,255,255,0.2)] rounded-3xl h-1 w-[350px]"
-            type="range"
-            min="0"
-            max="100"
-            value={playerState.progress}
-            onChange={handleVideoProgress}
-          /> */}
-          <p>
-            {convertHMS(playerState.currentTime.toFixed(2))}/{convertHMS(playerState.duration.toFixed(2))}
+          <p className="text-white">
+            {currentTime}/{convertHMS(playerState.duration.toFixed(2))}
           </p>
           <div className="flex-grow"></div>
           <select
-            className="appearance-none bg-transparent outline-none border-none text-center text-lg"
+            className="appearance-none bg-transparent text-white outline-none border-none text-center text-lg"
             value={playerState.speed}
             onChange={handleVideoSpeed}
           >
@@ -75,6 +78,7 @@ const App: React.FC = () => {
           </button>
         </div>
       </div>
+      <ToastContainer autoClose={2000} hideProgressBar={true} position={"top-right"} pauseOnFocusLoss pauseOnHover />
     </div>
   );
 };
