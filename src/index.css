@@ -11,3 +11,7 @@
 .range::-moz-progress-bar {
   background: white;
 }
+.show {
+  /* transform;:translate-y-0 */
+  transform: translateY(0);
+}
