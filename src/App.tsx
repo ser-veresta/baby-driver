@@ -2,18 +2,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { faVolumeHigh, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 import {
   faBackwardStep,
   faForwardStep,
   faPause,
   faPlay,
+  faVolumeHigh,
+  faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useVideoPlayer from "./utils/videoPlayerHook";
-import { stations, convertHMS } from "./utils/stations";
 import Toastcomp from "./components/toastrcomp";
+import convertHMS from "./utils/covertHMS";
+import stations from "./assets/stations.json";
+import useVideoPlayer from "./utils/videoPlayerHook";
 
 interface CityData {
   [keys: string]: {
@@ -57,16 +59,25 @@ const App: React.FC = () => {
 
   const [station, setstation] = useState(stations[0]);
   const [videosrc, setvideosrc] = useState<string>(city[0].src);
+  const [controlsHover, setControlsHover] = useState<boolean>(false);
 
-  const {
-    togglePlay,
-    playerState,
-    handleOnTimeUpdate,
-    handleVideoSpeed,
-    toggleMute,
-  } = useVideoPlayer(videoElement);
+  const { togglePlay, playerState, handleOnTimeUpdate, handleVideoSpeed, toggleMute } = useVideoPlayer(videoElement);
   const [currentTime, setCurrentTime] = useState<string>("00:00:00");
   const [stationState, setStationState] = useState(false);
+  const [idle, setIdle] = useState<NodeJS.Timer>();
+
+  const onMouseMove = () => {
+    clearTimeout(idle);
+    divElement.current?.classList.add("show");
+    if (controlsHover) {
+      return;
+    }
+    setIdle(
+      setTimeout(() => {
+        divElement.current?.classList.remove("show");
+      }, 5000)
+    );
+  };
 
   useEffect(() => {
     stationState ? audioElement.current?.play() : audioElement.current?.pause();
@@ -101,6 +112,7 @@ const App: React.FC = () => {
       toast(<Toastcomp city={citytoast} />);
     }
   }, [currentTime]);
+
   const handleVideoChange = (e: ChangeEvent<HTMLSelectElement>) => {
     // setvideoplace(e.target.value);
     city.forEach((city) => {
@@ -111,15 +123,12 @@ const App: React.FC = () => {
       }
     });
   };
-  const handleclick = () => {
-    togglePlay();
-  };
 
   return (
-    <div>
+    <div className="overflow-hidden h-screen absolute" onMouseMove={onMouseMove}>
       <video
-        onClick={handleclick}
-        className="fixed bottom-0 top-0 w-screen"
+        onClick={togglePlay}
+        className="relative top-0 w-screen"
         loop
         src={videosrc}
         ref={videoElement}
@@ -128,7 +137,9 @@ const App: React.FC = () => {
       />
       <div
         ref={divElement}
-        className="flex flex-col items-center gap-4 w-[350px] absolute bottom-2 right-0 p-4 shadow-2xl bg-white/[0.01] rounded-xl backdrop-blur-sm border translate-y-[150%] border-solid border-white/[0.18]"
+        onMouseEnter={() => setControlsHover(true)}
+        onMouseLeave={() => setControlsHover(false)}
+        className="flex flex-col items-center gap-4 w-[350px] absolute bottom-2 right-0 p-4 shadow-2xl bg-white/[0.01] rounded-xl backdrop-blur-sm border translate-y-[150%] border-solid border-white/[0.18] transition-all duration-200 ease-in-out"
       >
         {/* <div>
             <button className="bg-none border-none outline-none cursor-pointer" onClick={togglePlay}>
@@ -155,40 +166,20 @@ const App: React.FC = () => {
         </p> */}
         <div className="flex flex-col w-[350px] items-center border rounded-xl p-[10px]  border-black/[0.25]">
           <p className="text-white">{station.name}</p>
-          <audio
-            className="react-audio-player "
-            id="audio"
-            ref={audioElement}
-            src={station.urlResolved}
-          >
+          <audio className="react-audio-player " id="audio" ref={audioElement} src={station.urlResolved}>
             <p>
               Your browser does not support the <code>audio</code> element.
             </p>
           </audio>
           <div>
-            <button
-              onClick={() => prevStation(station.changeId)}
-              className="p-[10px]"
-            >
-              <FontAwesomeIcon
-                className="bg-none text-white text-3xl"
-                icon={faBackwardStep}
-              />
+            <button onClick={() => prevStation(station.changeId)} className="p-[10px]">
+              <FontAwesomeIcon className="bg-none text-white text-3xl" icon={faBackwardStep} />
             </button>
             <button onClick={changePlay} className="p-[10px]">
-              <FontAwesomeIcon
-                className="bg-none text-white text-3xl"
-                icon={!stationState ? faPlay : faPause}
-              />
+              <FontAwesomeIcon className="bg-none text-white text-3xl" icon={!stationState ? faPlay : faPause} />
             </button>
-            <button
-              onClick={() => nextStation(station.changeId)}
-              className="p-[10px]"
-            >
-              <FontAwesomeIcon
-                className="bg-none text-white text-3xl"
-                icon={faForwardStep}
-              />
+            <button onClick={() => nextStation(station.changeId)} className="p-[10px]">
+              <FontAwesomeIcon className="bg-none text-white text-3xl" icon={faForwardStep} />
             </button>
           </div>
         </div>
@@ -216,13 +207,7 @@ const App: React.FC = () => {
           </button>
         </div>
       </div>
-      <ToastContainer
-        autoClose={2000}
-        hideProgressBar={true}
-        position={"top-right"}
-        pauseOnFocusLoss
-        pauseOnHover
-      />
+      <ToastContainer autoClose={2000} hideProgressBar={true} position={"top-right"} pauseOnFocusLoss pauseOnHover />
     </div>
   );
 };
