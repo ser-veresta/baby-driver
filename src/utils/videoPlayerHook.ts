@@ -1,7 +1,9 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { playerState, videoPlayer } from "../types/videoPlayerTypes";
+import { ChangeEvent, useEffect, useState } from "react";
+import { playerState, useVideoPlayerType } from "../types/videoPlayerTypes";
 
-export const useVideoPlayer = (videoElement: React.RefObject<HTMLVideoElement>): videoPlayer => {
+import convertHMS from "./covertHMS";
+
+const useVideoPlayer: useVideoPlayerType = (videoElement) => {
   const [playerState, setPlayerState] = useState<playerState>({
     isPlaying: true,
     progress: 0,
@@ -9,6 +11,7 @@ export const useVideoPlayer = (videoElement: React.RefObject<HTMLVideoElement>):
     isMuted: true,
     duration: 0,
     currentTime: 0,
+    f_currentTime: "00:00:00",
   });
 
   const togglePlay = (): void => {
@@ -57,6 +60,10 @@ export const useVideoPlayer = (videoElement: React.RefObject<HTMLVideoElement>):
 
     playerState.isMuted ? (videoElement.current.muted = true) : (videoElement.current.muted = false);
   }, [playerState.isMuted, videoElement]);
+
+  useEffect(() => {
+    setPlayerState((val) => ({ ...val, f_currentTime: convertHMS(val.currentTime.toFixed(2)) }));
+  }, [playerState.currentTime]);
 
   return { playerState, togglePlay, handleOnTimeUpdate, handleVideoProgress, handleVideoSpeed, toggleMute };
 };

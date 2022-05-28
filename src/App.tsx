@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import {
   faBackwardStep,
@@ -13,57 +13,33 @@ import {
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Toastcomp from "./components/toastrcomp";
-import convertHMS from "./utils/covertHMS";
+import cityData from "./assets/videoData.json";
+import { cityDataType } from "./types/appTypes";
 import stations from "./assets/stations.json";
+import useAudioPlayer from "./utils/audioPlayerhook";
 import useVideoPlayer from "./utils/videoPlayerHook";
-
-interface CityData {
-  [keys: string]: {
-    shop: string;
-    description: string;
-    rating: string;
-  };
-}
-interface City {
-  [keys: string]: string;
-}
-const cityData: CityData = {
-  "00:00:01": {
-    shop: "china",
-    description:
-      "China is situated in eastern Asia , bounded by the Pacific in the east. With a landmass of 9,600,000 sq km or one-fifteenth of the world's land mass, China is the third largest country in the world, next to Canada and Russia .",
-    rating: "4.9",
-  },
-  "00:00:14": {
-    shop: "Samsung Company",
-    description:
-      "Samsung, South Korean company that is one of the world's largest producers of electronic devices. Samsung specializes in the production of a wide variety of consumer and industry electronics, including appliances, digital media devices, semiconductors, memory chips, and integrated systems.",
-    rating: "4.5",
-  },
-};
-const city: City[] = [
-  {
-    place: "Hongkong",
-    src: "https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653228273/City%20Video/Magic_of_Hong_Kong._Mind-blowing_cyberpunk_drone_video_of_the_craziest_Asia_s_city_by_Timelab.pro_geqnk0.mp4",
-  },
-  {
-    place: "Spain",
-    src: "https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653567856/City%20Video/videoplayback_2_klx1dw.mp4",
-  },
-];
 
 const App: React.FC = () => {
   const videoElement = useRef<HTMLVideoElement>(null);
   const audioElement = useRef<HTMLAudioElement>(null);
   const divElement = useRef<HTMLDivElement>(null);
 
-  const [station, setstation] = useState(stations[0]);
-  const [videosrc, setvideosrc] = useState<string>(city[0].src);
+  const [videosrc, setvideosrc] = useState<cityDataType>(cityData[0]);
   const [controlsHover, setControlsHover] = useState<boolean>(false);
 
-  const { togglePlay, playerState, handleOnTimeUpdate, handleVideoSpeed, toggleMute } = useVideoPlayer(videoElement);
-  const [currentTime, setCurrentTime] = useState<string>("00:00:00");
-  const [stationState, setStationState] = useState(false);
+  const {
+    playerState: videoPlayerState,
+    handleOnTimeUpdate,
+    handleVideoSpeed,
+    toggleMute,
+  } = useVideoPlayer(videoElement);
+  const {
+    playerState: audioPlayerState,
+    currentStation,
+    togglePlay,
+    handleNextTrack,
+    handlePrevTrack,
+  } = useAudioPlayer(audioElement, videoElement, stations);
   const [idle, setIdle] = useState<NodeJS.Timer>();
 
   const onMouseMove = () => {
@@ -80,46 +56,16 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    stationState ? audioElement.current?.play() : audioElement.current?.pause();
-  }, [stationState, audioElement]);
-
-  const changePlay = (): void => {
-    setStationState((ele) => !ele);
-  };
-
-  const prevStation = (id: number) => {
-    stationState && changePlay();
-    setTimeout(() => changePlay(), 500);
-    const changeid = (id - 1) % stations.length;
-    setstation(stations[changeid]);
-  };
-
-  const nextStation = (id: number) => {
-    stationState && changePlay();
-    setTimeout(() => changePlay(), 500);
-    const changeid = (id + 1) % stations.length;
-    setstation(stations[changeid]);
-  };
-
-  useEffect(() => {
-    setCurrentTime(convertHMS(playerState.currentTime.toFixed(2)));
-  }, [playerState.currentTime]);
-
-  useEffect(() => {
-    if (cityData.hasOwnProperty(currentTime)) {
-      // console.log(cityData[currentTime]);
-      const citytoast = cityData[currentTime];
+    if (videosrc.timeStamp.hasOwnProperty(videoPlayerState.f_currentTime)) {
+      const citytoast = videosrc.timeStamp[videoPlayerState.f_currentTime];
       toast(<Toastcomp city={citytoast} />);
     }
-  }, [currentTime]);
+  }, [videoPlayerState.f_currentTime, videosrc.timeStamp]);
 
-  const handleVideoChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    // setvideoplace(e.target.value);
-    city.forEach((city) => {
-      if (city.place === e.target.value) {
-        console.log(e.target.value === city.place);
-        console.log(city.src);
-        setvideosrc(city.src);
+  const handleVideoChange = (place: string) => {
+    cityData.forEach((city) => {
+      if (city.place === place) {
+        setvideosrc(city);
       }
     });
   };
@@ -130,7 +76,7 @@ const App: React.FC = () => {
         onClick={togglePlay}
         className="relative top-0 w-screen"
         loop
-        src={videosrc}
+        src={videosrc.src}
         ref={videoElement}
         onTimeUpdate={handleOnTimeUpdate}
         autoPlay
@@ -141,73 +87,60 @@ const App: React.FC = () => {
         onMouseLeave={() => setControlsHover(false)}
         className="flex flex-col items-center gap-4 w-[350px] absolute bottom-2 right-0 p-4 shadow-2xl bg-white/[0.01] rounded-xl backdrop-blur-sm border translate-y-[150%] border-solid border-white/[0.18] transition-all duration-200 ease-in-out"
       >
-        {/* <div>
-            <button className="bg-none border-none outline-none cursor-pointer" onClick={togglePlay}>
-              <FontAwesomeIcon
-                className="bg-none text-white text-3xl"
-                icon={!playerState.isPlaying ? faPlay : faPause}
-              />
-            </button>
-          </div> */}
-        <select
-          className="bg-transparent border text-white rounded-xl  border-black/[0.25] p-[10px]"
-          onChange={handleVideoChange}
-        >
-          {city.map((city) => {
-            return (
-              <option className="text-white" value={city.place}>
-                {city.place}
-              </option>
-            );
-          })}
-        </select>
-        {/* <p className="text-white">
-          {currentTime}/{convertHMS(playerState.duration.toFixed(2))}
-        </p> */}
-        <div className="flex flex-col w-[350px] items-center border rounded-xl p-[10px]  border-black/[0.25]">
-          <p className="text-white">{station.name}</p>
-          <audio className="react-audio-player " id="audio" ref={audioElement} src={station.urlResolved}>
+        <div className="bg-transparent flex flex-col w-1/2 justify-center items-center gap-2 text-white font-semibold">
+          {cityData.map((city) => (
+            <div
+              className="hover:bg-white/20 p-2 rounded-lg w-full text-center cursor-pointer"
+              onClick={() => handleVideoChange(city.place)}
+            >
+              {city.place}
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col gap-2 w-[350px] items-center rounded-xl p-[10px]">
+          <p className="text-white">{currentStation.name}</p>
+          <audio className="react-audio-player " id="audio" ref={audioElement} src={currentStation.urlResolved}>
             <p>
               Your browser does not support the <code>audio</code> element.
             </p>
           </audio>
           <div>
-            <button onClick={() => prevStation(station.changeId)} className="p-[10px]">
+            <button onClick={() => handlePrevTrack()} className="p-[10px]">
               <FontAwesomeIcon className="bg-none text-white text-3xl" icon={faBackwardStep} />
             </button>
-            <button onClick={changePlay} className="p-[10px]">
-              <FontAwesomeIcon className="bg-none text-white text-3xl" icon={!stationState ? faPlay : faPause} />
+            <button onClick={togglePlay} className="p-[10px]">
+              <FontAwesomeIcon
+                className="bg-none text-white text-3xl"
+                icon={!audioPlayerState.isPlaying ? faPlay : faPause}
+              />
             </button>
-            <button onClick={() => nextStation(station.changeId)} className="p-[10px]">
+            <button onClick={() => handleNextTrack()} className="p-[10px]">
               <FontAwesomeIcon className="bg-none text-white text-3xl" icon={faForwardStep} />
             </button>
           </div>
         </div>
-        <div>
-          <select
-            // className="appearance-none bg-transparent text-white outline-none border-none text-center text-lg"
-            className="bg-transparent border text-white rounded-xl  border-black/[0.25] p-[10px]"
-            value={playerState.speed}
-            onChange={handleVideoSpeed}
-          >
-            <option value="0.50">0.50X</option>
-            <option value="1">1X</option>
-            <option value="1.50">1.50X</option>
-            <option value="2">2X</option>
+        <div className="flex gap-2 items-center">
+          <select className="bg-transparent rounded-xl" value={videoPlayerState.speed} onChange={handleVideoSpeed}>
+            <option value="0.50">x0.50</option>
+            <option value="1">x1</option>
+            <option value="1.50">x1.50</option>
+            <option value="2">x2</option>
           </select>
-          <button
-            // className="bg-none border-none outline-none text-white cursor-pointer"
-            className="bg-transparent border text-white rounded-xl  border-black/[0.25] p-[10px]"
-            onClick={toggleMute}
-          >
+          <button className="bg-transparent text-white rounded-xl p-[10px]" onClick={toggleMute}>
             <FontAwesomeIcon
               className="bg-none text-white text-xl"
-              icon={playerState.isMuted ? faVolumeMute : faVolumeHigh}
+              icon={videoPlayerState.isMuted ? faVolumeMute : faVolumeHigh}
             />
           </button>
         </div>
       </div>
-      <ToastContainer autoClose={2000} hideProgressBar={true} position={"top-right"} pauseOnFocusLoss pauseOnHover />
+      <ToastContainer
+        autoClose={2000}
+        hideProgressBar={true}
+        position={"top-right"}
+        pauseOnFocusLoss={false}
+        pauseOnHover
+      />
     </div>
   );
 };

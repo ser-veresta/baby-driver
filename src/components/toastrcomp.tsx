@@ -1,15 +1,12 @@
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { timeStampKey } from "../types/appTypes";
 
 interface Props {
-  city: {
-    shop: string;
-    description: string;
-    rating: string;
-  };
+  city: timeStampKey | undefined;
 }
 const Toastcomp: React.FC<Props> = ({ city }) => {
+  if (!city) return <h1>No Data</h1>;
   return (
     <div>
       <em>{city.shop}</em>

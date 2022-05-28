@@ -1,0 +1,29 @@
+[
+  {
+    "place": "Hongkong",
+    "src": "https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653228273/City%20Video/Magic_of_Hong_Kong._Mind-blowing_cyberpunk_drone_video_of_the_craziest_Asia_s_city_by_Timelab.pro_geqnk0.mp4",
+    "timeStamp": {
+      "00:00:01": {
+        "shop": "china",
+        "description": "China is situated in eastern Asia , bounded by the Pacific in the east. With a landmass of 9,600,000 sq km or one-fifteenth of the world's land mass, China is the third largest country in the world, next to Canada and Russia .",
+        "rating": "4.9"
+      },
+      "00:00:14": {
+        "shop": "Samsung Company",
+        "description": "Samsung, South Korean company that is one of the world's largest producers of electronic devices. Samsung specializes in the production of a wide variety of consumer and industry electronics, including appliances, digital media devices, semiconductors, memory chips, and integrated systems.",
+        "rating": "3.5"
+      }
+    }
+  },
+  {
+    "place": "Spain",
+    "src": "https://res.cloudinary.com/dlbgf6sqt/video/upload/v1653567856/City%20Video/videoplayback_2_klx1dw.mp4",
+    "timeStamp": {
+      "00:00:01": {
+        "shop": "spain",
+        "description": "",
+        "rating": "4.5"
+      }
+    }
+  }
+]

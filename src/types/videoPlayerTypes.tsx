@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
 
 export interface playerState {
   isPlaying: boolean;
@@ -7,6 +7,7 @@ export interface playerState {
   isMuted: boolean;
   duration: number;
   currentTime: number;
+  f_currentTime: string;
 }
 
 export interface videoPlayer {
@@ -17,3 +18,5 @@ export interface videoPlayer {
   handleVideoSpeed: (e: ChangeEvent<HTMLSelectElement>) => void;
   toggleMute: () => void;
 }
+
+export type useVideoPlayerType = (videoElement: React.RefObject<HTMLVideoElement>) => videoPlayer;
