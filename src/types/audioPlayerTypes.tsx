@@ -1,3 +1,5 @@
+import { toggleMute, playerState as videoPlayeState } from "./videoPlayerTypes";
+
 import React from "react";
 
 export interface playerState {
@@ -5,10 +7,12 @@ export interface playerState {
   isPlaying: boolean;
 }
 
+export type togglePlay = (videoPlayerState?: videoPlayeState, toggleMute?: toggleMute) => void;
+
 export interface audioPlayer {
   playerState: playerState;
   currentStation: stations;
-  togglePlay: () => void;
+  togglePlay: togglePlay;
   handleNextTrack: () => void;
   handlePrevTrack: () => void;
 }
@@ -42,8 +46,4 @@ export interface stations {
   geoLong: number | null; // Longitude on earth where the stream is located. Null if it doesn't exist.
 }
 
-export type useAudioPlayerType = (
-  audioElement: React.RefObject<HTMLAudioElement>,
-  videoElement: React.RefObject<HTMLVideoElement>,
-  stations: stations[]
-) => audioPlayer;
+export type useAudioPlayerType = (audioElement: React.RefObject<HTMLAudioElement>, stations: stations[]) => audioPlayer;

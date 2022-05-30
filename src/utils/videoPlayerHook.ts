@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { playerState, useVideoPlayerType } from "../types/videoPlayerTypes";
+import { playerState, toggleMute, useVideoPlayerType } from "../types/videoPlayerTypes";
 
 import convertHMS from "./covertHMS";
 
@@ -51,7 +51,8 @@ const useVideoPlayer: useVideoPlayerType = (videoElement) => {
     setPlayerState((e) => ({ ...e, speed }));
   };
 
-  const toggleMute = (): void => {
+  const toggleMute: toggleMute = (audioPlayerState, togglePlay) => {
+    if (audioPlayerState?.isPlaying && togglePlay) togglePlay();
     setPlayerState((e) => ({ ...e, isMuted: !e.isMuted }));
   };
 

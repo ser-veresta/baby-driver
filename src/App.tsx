@@ -31,6 +31,7 @@ const App: React.FC = () => {
     playerState: videoPlayerState,
     handleOnTimeUpdate,
     handleVideoSpeed,
+    togglePlay: videoTogglePlay,
     toggleMute,
   } = useVideoPlayer(videoElement);
   const {
@@ -39,7 +40,7 @@ const App: React.FC = () => {
     togglePlay,
     handleNextTrack,
     handlePrevTrack,
-  } = useAudioPlayer(audioElement, videoElement, stations);
+  } = useAudioPlayer(audioElement, stations);
   const [idle, setIdle] = useState<NodeJS.Timer>();
 
   const onMouseMove = () => {
@@ -73,7 +74,7 @@ const App: React.FC = () => {
   return (
     <div className="overflow-hidden h-screen absolute" onMouseMove={onMouseMove}>
       <video
-        onClick={togglePlay}
+        onClick={videoTogglePlay}
         className="relative top-0 w-screen"
         loop
         src={videosrc.src}
@@ -108,7 +109,7 @@ const App: React.FC = () => {
             <button onClick={() => handlePrevTrack()} className="p-[10px]">
               <FontAwesomeIcon className="bg-none text-white text-3xl" icon={faBackwardStep} />
             </button>
-            <button onClick={togglePlay} className="p-[10px]">
+            <button onClick={() => togglePlay(videoPlayerState, toggleMute)} className="p-[10px]">
               <FontAwesomeIcon
                 className="bg-none text-white text-3xl"
                 icon={!audioPlayerState.isPlaying ? faPlay : faPause}
@@ -120,13 +121,20 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <select className="bg-transparent rounded-xl" value={videoPlayerState.speed} onChange={handleVideoSpeed}>
+          <select
+            className="bg-transparent rounded-xl text-white"
+            value={videoPlayerState.speed}
+            onChange={handleVideoSpeed}
+          >
             <option value="0.50">x0.50</option>
             <option value="1">x1</option>
             <option value="1.50">x1.50</option>
             <option value="2">x2</option>
           </select>
-          <button className="bg-transparent text-white rounded-xl p-[10px]" onClick={toggleMute}>
+          <button
+            className="bg-transparent text-white rounded-xl p-[10px]"
+            onClick={() => toggleMute(audioPlayerState, togglePlay)}
+          >
             <FontAwesomeIcon
               className="bg-none text-white text-xl"
               icon={videoPlayerState.isMuted ? faVolumeMute : faVolumeHigh}

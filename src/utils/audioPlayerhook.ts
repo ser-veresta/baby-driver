@@ -1,28 +1,25 @@
-import { playerState, stations, useAudioPlayerType } from "../types/audioPlayerTypes";
+import { playerState, stations, togglePlay, useAudioPlayerType } from "../types/audioPlayerTypes";
 import { useEffect, useState } from "react";
 
-import useVideoPlayer from "./videoPlayerHook";
-
-const useAudioPlayer: useAudioPlayerType = (audioElement, videoElement, stations) => {
-  const { playerState: videoPlayerState, toggleMute } = useVideoPlayer(videoElement);
+const useAudioPlayer: useAudioPlayerType = (audioElement, stations) => {
   const [playerState, setPlayerState] = useState<playerState>({
     trackId: 0,
-    isPlaying: true,
+    isPlaying: false,
   });
   const [currentStation, setStation] = useState<stations>(stations[playerState.trackId]);
 
-  const togglePlay = () => {
+  const togglePlay: togglePlay = (videoPlayerState, toggleMute) => {
+    if (!videoPlayerState?.isMuted && toggleMute) toggleMute();
     setPlayerState((val) => ({ ...val, isPlaying: !val.isPlaying }));
   };
 
   useEffect(() => {
     if (playerState.isPlaying) {
       audioElement.current?.play();
-      if (!videoPlayerState.isMuted) toggleMute();
     } else {
       audioElement.current?.pause();
     }
-  }, [playerState.isPlaying, videoPlayerState.isMuted, toggleMute, audioElement]);
+  }, [playerState.isPlaying, audioElement]);
 
   const handleNextTrack = () => {
     playerState.isPlaying && togglePlay();
